@@ -1,0 +1,64 @@
+# SQL Join exercise
+#
+USE World;
+#
+# 1: Get the cities with a name starting with ping sorted by their population with the least populated cities first
+SELECT * FROM City WHERE Name LIKE "ping%" ORDER BY Population ASC;
+#
+# 2: Get the cities with a name starting with ran sorted by their population with the most populated cities first
+SELECT * FROM City WHERE Name LIKE "ran%" ORDER BY Population DESC;
+#
+# 3: Count all cities
+SELECT Count(ID) FROM city;
+#
+# 4: Get the average population of all cities
+SELECT avg(Population) FROM city;
+#
+# 5: Get the biggest population found in any of the cities
+SELECT max(Population) FROM city;
+#
+# 6: Get the smallest population found in any of the cities
+SELECT min(Population) FROM city;
+#
+# 7: Sum the population of all cities with a population below 10000
+SELECT sum(Population) FROM city WHERE Population<10000;
+#
+# 8: Count the cities with the countrycodes MOZ and VNM
+SELECT count(ID) FROM city WHERE CountryCode IN ("MOZ","VNM");
+#
+# 9: Get individual count of cities for the countrycodes MOZ and VNM
+SELECT CountryCode,count(ID) FROM city WHERE CountryCode IN ("MOZ","VNM") GROUP BY CountryCode;
+#
+# 10: Get average population of cities in MOZ and VNM
+SELECT avg(Population) 'Averagepoulation' FROM city WHERE CountryCode IN ("MOZ","VNM");
+#
+# 11: Get the countrycodes with more than 200 cities
+SELECT country.Code, Count(City.ID) Cities FROM Country INNER JOIN City ON Country.Code = City.CountryCode GROUP BY Country.code HAVING (((Count(City.CountryCode))>200));
+#
+# 12: Get the countrycodes with more than 200 cities ordered by city count
+SELECT country.Code CountryCode, Count(City.ID) Cities FROM Country INNER JOIN City ON country.Code = City.CountryCode GROUP BY country.Code HAVING ((Count(City.ID)>200)) order by Count(City.ID);
+#
+# 13: What language(s) is spoken in the city with a population between 400 and 500 ?
+SELECT city.Name, countrylanguage.Language FROM city INNER JOIN countrylanguage ON city.CountryCode = countrylanguage.CountryCode WHERE (((city.Population)>400 And (city.Population)<500));
+#
+# 14: What are the name(s) of the cities with a population between 500 and 600 people and the language(s) spoken in them
+SELECT city.Name City, countrylanguage.Language FROM city INNER JOIN countrylanguage ON city.CountryCode = countrylanguage.CountryCode WHERE (((city.Population)>500 And (city.Population)<600));
+#
+# 15: What names of the cities are in the same country as the city with a population of 122199 (including the that city itself)
+SELECT city.Name FROM (city AS findpop INNER JOIN city ON findpop.CountryCode = city.CountryCode) INNER JOIN country ON findpop.CountryCode = country.Code WHERE (((findpop.Population)=122199) );
+#
+# 16: What names of the cities are in the same country as the city with a population of 122199 (excluding the that city itself)
+SELECT city.Name FROM (city AS findpop INNER JOIN city ON findpop.CountryCode = city.CountryCode) INNER JOIN country ON findpop.CountryCode = country.Code WHERE (((findpop.Population)=122199) AND findpop.ID != city.ID);
+#
+# 17: What are the city names in the country where Luanda is capital?
+SELECT country.Name Country, city.Name City FROM (city AS Capitol INNER JOIN city ON Capitol.CountryCode = city.CountryCode) INNER JOIN country ON Capitol.ID = country.Capital WHERE Capitol.Name="Luanda";
+#
+# 18: What are the names of the capital cities in countries in the same region as the city named Yaren
+SELECT regionCountries.Name Country, Capitol.Name Capitol FROM ((city INNER JOIN country ON city.CountryCode = country.Code) INNER JOIN country AS regionCountries ON country.Region = regionCountries.Region) INNER JOIN city AS Capitol ON regionCountries.Capital = Capitol.ID WHERE (((city.Name)="Yaren"));
+#
+# 19: What unique languages are spoken in the countries in the same region as the city named Riga
+SELECT DISTINCT countrylanguage.Language FROM ((city INNER JOIN country ON city.CountryCode = country.Code) INNER JOIN country AS regionCountries ON country.Region = regionCountries.Region) INNER JOIN countrylanguage ON regionCountries.Code = countrylanguage.CountryCode WHERE (((city.Name)="Riga"));
+#
+# 20: Get the name of the most populous city
+SELECT city.Name FROM city ORDER BY city.Population DESC Limit 1;
+#
